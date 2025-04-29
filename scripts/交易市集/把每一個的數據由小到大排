@@ -1,0 +1,17 @@
+const lowPriceData = JSON.parse(localStorage.getItem('lowestPriceData'));
+
+if (lowPriceData && Array.isArray(lowPriceData)) {
+  // 過濾出有正確 lowPrice 的
+  const filteredData = lowPriceData.filter(item => typeof item.lowPrice === 'number' && !isNaN(item.lowPrice));
+  
+  // 按照 lowPrice 從小到大排序
+  filteredData.sort((a, b) => a.lowPrice - b.lowPrice);
+  
+  console.log(filteredData);
+} else {
+  console.log('No data found in localStorage.');
+}
+
+
+
+
