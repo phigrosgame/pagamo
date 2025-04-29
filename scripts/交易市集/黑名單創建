@@ -1,0 +1,82 @@
+(function() {
+  const BLACKLIST_KEY = 'blacklistData';
+
+  const blacklistPanel = document.createElement('div');
+  blacklistPanel.style.position = 'fixed';
+  blacklistPanel.style.bottom = '10px';
+  blacklistPanel.style.right = '10px';
+  blacklistPanel.style.padding = '10px';
+  blacklistPanel.style.background = 'rgba(0,0,0,0.8)';
+  blacklistPanel.style.color = '#fff';
+  blacklistPanel.style.borderRadius = '8px';
+  blacklistPanel.style.zIndex = '9999';
+  blacklistPanel.style.fontSize = '14px';
+  blacklistPanel.style.maxWidth = '300px';
+  blacklistPanel.style.maxHeight = '300px';
+  blacklistPanel.style.overflowY = 'auto';
+  blacklistPanel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span>黑名單管理器</span>
+      <button id="close-blacklist-panel" style="background:none;border:none;color:white;font-size:16px;cursor:pointer;">❌</button>
+    </div>
+    <input type="text" id="blacklist-input" placeholder="輸入名稱..." style="width: 70%; margin-top:5px;">
+    <button id="add-blacklist" style="margin-top:5px;">新增</button>
+    <ul id="blacklist-list" style="list-style: none; padding: 0; margin-top:5px;"></ul>
+    <button id="clear-blacklist" style="margin-top:5px; color:red;">清空全部</button>
+  `;
+  document.body.appendChild(blacklistPanel);
+
+  function getBlacklist() {
+    return JSON.parse(localStorage.getItem(BLACKLIST_KEY)) || [];
+  }
+
+  function saveBlacklist(list) {
+    localStorage.setItem(BLACKLIST_KEY, JSON.stringify(list));
+    renderBlacklist();
+  }
+
+  function renderBlacklist() {
+    const list = getBlacklist();
+    const ul = document.getElementById('blacklist-list');
+    ul.innerHTML = '';
+    list.forEach((name, index) => {
+      const li = document.createElement('li');
+      li.textContent = name + ' ';
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.style.marginLeft = '5px';
+      btn.onclick = () => {
+        list.splice(index, 1);
+        saveBlacklist(list);
+      };
+      li.appendChild(btn);
+      ul.appendChild(li);
+    });
+  }
+
+  document.getElementById('add-blacklist').onclick = () => {
+    const input = document.getElementById('blacklist-input');
+    const name = input.value.trim();
+    if (name) {
+      const list = getBlacklist();
+      if (!list.includes(name)) {
+        list.push(name);
+        saveBlacklist(list);
+      }
+      input.value = '';
+    }
+  };
+
+  document.getElementById('clear-blacklist').onclick = () => {
+    localStorage.removeItem(BLACKLIST_KEY);
+    renderBlacklist();
+  };
+
+  document.getElementById('close-blacklist-panel').onclick = () => {
+    blacklistPanel.style.display = 'none';
+  };
+
+  renderBlacklist();
+})();
+
+
