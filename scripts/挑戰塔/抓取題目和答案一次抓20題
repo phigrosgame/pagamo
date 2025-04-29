@@ -1,0 +1,92 @@
+// 抓取當前題目的資料
+function getQuestionData() {
+    const div = document.querySelector('.question-iframe-container.pgo-style-question-content-wrapper-DprzUI');
+
+    let questionText = '';
+    let imgUrl = '';
+    if (div) {
+        questionText = div.innerHTML.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, "").trim();
+        console.log('題目文字:', questionText);
+
+        const img = div.querySelector('img');
+        if (img) {
+            imgUrl = img.src;
+            console.log('圖片網址:', imgUrl);
+        }
+    }
+
+    const correctOptions = [];
+    const correctDivs = document.querySelectorAll('div[data-correct="true"]');
+    correctDivs.forEach(option => {
+        const optionText = option.querySelector('.pgo-style-selection-content-1x0d36')?.textContent.trim();
+        if (optionText) {
+            correctOptions.push(optionText);
+        }
+    });
+
+    console.log('正確選項:', correctOptions);
+
+    let existingData = JSON.parse(localStorage.getItem('quizData')) || [];
+
+    const newResult = {
+        question: {
+            text: questionText,
+            img: imgUrl || null
+        },
+        correctOptions: correctOptions.length > 0 ? correctOptions : null
+    };
+
+    // 防止重複
+    const isDuplicate = existingData.some(item =>
+        item.question.text === newResult.question.text &&
+        JSON.stringify(item.correctOptions) === JSON.stringify(newResult.correctOptions)
+    );
+
+    if (!isDuplicate) {
+        existingData.push(newResult);
+        localStorage.setItem('quizData', JSON.stringify(existingData));
+        console.log('✅ 新資料已儲存。');
+    } else {
+        console.log('⚠️ 資料重複，未儲存。');
+    }
+}
+
+// 點選下一題的按鈕
+function goToNextQuestion(nextNumber) {
+    const allButtons = document.querySelectorAll('.cursor_pointer.exam_control_list_sprite.q_btn > div');
+    for (let btn of allButtons) {
+        if (btn.textContent.trim() === String(nextNumber)) {
+            btn.click();
+            console.log(`➡️ 點了第 ${nextNumber} 題`);
+            return true;
+        }
+    }
+    console.log(`❌ 沒找到第 ${nextNumber} 題的按鈕`);
+    return false;
+}
+
+// 主流程
+async function start() {
+    // 第一次直接抓取當前頁面的資料 (第一題)
+    console.log('📥 抓取第 1 題');
+    getQuestionData();
+
+    // 然後從第 2 題到第 20 題
+    let current = 2;
+    const max = 20;
+
+    while (current <= max) {
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 等待頁面切換
+        goToNextQuestion(current);
+        await new Promise(resolve => setTimeout(resolve, 1500)); // 等待題目載入
+        getQuestionData();
+        current++;
+    }
+
+    console.log('🎯 全部題目抓取完成！');
+}
+
+// 開始
+start();
+
+
