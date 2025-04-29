@@ -1,0 +1,10 @@
+from pynput import mouse
+
+def on_click(x, y, button, pressed):
+    if pressed:
+        print(f"🖱️ 滑鼠點擊位置：X={x}, Y={y}")
+
+# 監聽滑鼠事件
+with mouse.Listener(on_click=on_click) as listener:
+    print("🖥️ 開始監聽滑鼠點擊，按 Ctrl+C 可以停止")
+    listener.join()
