@@ -92,11 +92,6 @@ async function grabQuestion() {
         correctOptions: correctOptions.length > 0 ? correctOptions : null
     };
 
-    // 顯示抓取到的元素
-    console.log('📜 題目:', questionText);
-    console.log('🖼️ 圖片 URL:', imgUrl);
-    console.log('✔️ 正確選項:', correctOptions);
-
     let existingData = JSON.parse(localStorage.getItem('quizData'));
     if (!Array.isArray(existingData)) {
         existingData = [];
@@ -150,6 +145,3 @@ async function repeatFlow(times = 100) {
 
 // 執行
 repeatFlow(100);
-
-
-
