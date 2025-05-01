@@ -1,10 +1,53 @@
-from pynput import mouse
+import tkinter as tk
+import pyautogui
+import json
+import os
 
-def on_click(x, y, button, pressed):
-    if pressed:
-        print(f"🖱️ 滑鼠點擊位置：X={x}, Y={y}")
+# 檔案儲存位置
+SAVE_FILE = 'coordinates.json'
 
-# 監聽滑鼠事件
-with mouse.Listener(on_click=on_click) as listener:
-    print("🖥️ 開始監聽滑鼠點擊，按 Ctrl+C 可以停止")
-    listener.join()
+# 載入舊資料
+if os.path.exists(SAVE_FILE):
+    with open(SAVE_FILE, 'r') as f:
+        coordinates = json.load(f)
+else:
+    coordinates = {}
+
+def record_position(option):
+    def record():
+        print(f"👉 請在 3 秒內把滑鼠移到【{option}】的位置...")
+        root.after(3000, lambda: save_position(option))
+    return record
+
+def save_position(option):
+    x, y = pyautogui.position()
+    coordinates[option] = (x, y)
+    print(f"✅ 已儲存【{option}】：({x}, {y})")
+    update_display()
+    save_to_file()
+
+def update_display():
+    result_var.set("\n".join(f"{k}: {v}" for k, v in coordinates.items()))
+
+def save_to_file():
+    with open(SAVE_FILE, 'w') as f:
+        json.dump(coordinates, f)
+
+# GUI
+root = tk.Tk()
+root.title("設定答題座標")
+root.geometry("320x300")
+
+tk.Label(root, text="點選按鈕，在 3 秒內把滑鼠移到對應位置").pack(pady=10)
+
+tk.Button(root, text="設定 A", width=20, command=record_position('A')).pack(pady=5)
+tk.Button(root, text="設定 B", width=20, command=record_position('B')).pack(pady=5)
+tk.Button(root, text="設定 C", width=20, command=record_position('C')).pack(pady=5)
+tk.Button(root, text="設定 下一題", width=20, command=record_position('next')).pack(pady=5)
+
+result_var = tk.StringVar()
+tk.Label(root, text="目前座標：").pack(pady=(10, 0))
+tk.Label(root, textvariable=result_var).pack()
+
+update_display()
+root.mainloop()
