@@ -1,0 +1,143 @@
+(function() {
+  const STORAGE_KEY = 'manualLowPriceData';
+
+  const editorPanel = document.createElement('div');
+  editorPanel.style.position = 'fixed';
+  editorPanel.style.bottom = '10px';
+  editorPanel.style.left = '10px';
+  editorPanel.style.padding = '10px';
+  editorPanel.style.background = 'rgba(0,0,50,0.8)';
+  editorPanel.style.color = '#fff';
+  editorPanel.style.borderRadius = '8px';
+  editorPanel.style.zIndex = '9999';
+  editorPanel.style.fontSize = '14px';
+  editorPanel.style.maxWidth = '400px';
+  editorPanel.style.maxHeight = '500px';
+  editorPanel.style.overflowY = 'auto';
+  editorPanel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span>價格資料編輯器</span>
+      <button id="close-editor-panel" style="background:none;border:none;color:white;font-size:16px;cursor:pointer;">❌</button>
+    </div>
+    <div style="margin-top:10px;">
+      <input id="search-input" type="text" placeholder="🔍 搜尋..." style="width:100%;margin-bottom:5px;padding:5px;border-radius:5px;border:none;">
+      <button id="sort-price" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;margin-bottom:5px;">🔼 按價格排序</button>
+      <button id="sort-name" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;">🔼 按名字排序</button>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:5px;">
+      <input id="new-name" type="text" placeholder="商品名稱" style="flex:1;padding:5px;border-radius:5px;border:none;">
+      <input id="new-price" type="number" placeholder="價格" style="width:80px;padding:5px;border-radius:5px;border:none;">
+      <button id="add-item" style="padding:5px;border-radius:5px;background:green;color:white;border:none;">➕ 新增</button>
+    </div>
+    <ul id="price-list" style="list-style:none;padding:0;margin-top:10px;"></ul>
+    <button id="save-changes" style="margin-top:5px;">💾 儲存更改</button>
+  `;
+  document.body.appendChild(editorPanel);
+
+  function getData() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  }
+
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  let currentSort = 'price';
+  let searchQuery = '';
+
+  function renderEditor() {
+    let data = getData();
+
+    if (searchQuery) {
+      data = data.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    if (currentSort === 'price') {
+      data.sort((a, b) => a.lowPrice - b.lowPrice);
+    } else if (currentSort === 'name') {
+      data.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const ul = document.getElementById('price-list');
+    ul.innerHTML = '';
+    data.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.style.marginBottom = '8px';
+      li.innerHTML = `
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="flex:1;">${item.name}</span>
+          <input type="number" value="${item.lowPrice}" style="width:80px;" data-name="${item.name}">
+          <button class="delete-item" data-name="${item.name}" style="background:red;color:white;border:none;border-radius:4px;padding:2px 6px;">✖</button>
+        </div>
+      `;
+      ul.appendChild(li);
+    });
+
+    document.querySelectorAll('.delete-item').forEach(btn => {
+      btn.onclick = () => {
+        const name = btn.getAttribute('data-name');
+        const newData = getData().filter(item => item.name !== name);
+        saveData(newData);
+        renderEditor();
+      };
+    });
+  }
+
+  document.getElementById('save-changes').onclick = () => {
+    const inputs = document.querySelectorAll('#price-list input');
+    const allData = getData();
+    inputs.forEach(input => {
+      const name = input.getAttribute('data-name');
+      const newPrice = parseFloat(input.value);
+      const target = allData.find(item => item.name === name);
+      if (target && !isNaN(newPrice)) {
+        target.lowPrice = newPrice;
+      }
+    });
+    saveData(allData);
+    alert('✅ 資料已更新！');
+    renderEditor();
+  };
+
+  document.getElementById('add-item').onclick = () => {
+    const name = document.getElementById('new-name').value.trim();
+    const price = parseFloat(document.getElementById('new-price').value);
+    if (!name || isNaN(price)) {
+      alert('請填寫有效的名稱與價格');
+      return;
+    }
+
+    const data = getData();
+    if (data.some(item => item.name === name)) {
+      alert('此名稱已存在');
+      return;
+    }
+
+    data.push({ name, lowPrice: price });
+    saveData(data);
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-price').value = '';
+    renderEditor();
+  };
+
+  document.getElementById('close-editor-panel').onclick = () => {
+    editorPanel.style.display = 'none';
+  };
+
+  document.getElementById('sort-price').onclick = () => {
+    currentSort = 'price';
+    renderEditor();
+  };
+
+  document.getElementById('sort-name').onclick = () => {
+    currentSort = 'name';
+    renderEditor();
+  };
+
+  document.getElementById('search-input').oninput = (e) => {
+    searchQuery = e.target.value;
+    renderEditor();
+  };
+
+  renderEditor();
+})();
