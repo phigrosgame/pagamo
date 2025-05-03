@@ -1,12 +1,44 @@
 (function() {
   const STORAGE_KEY = 'manualLowPriceData';
+  const EXISTING_PANEL_ID = 'manual-low-price-panel';
 
-// 若已經存在面板，就只顯示並刷新資料，不重複建立
-  const existingPanel = document.getElementById(EXISTING_PANEL_ID);
-  if (existingPanel) {
-    existingPanel.style.display = 'block';
-    renderEditor();
-    return;
+  // 定義 renderEditor 函數
+  function renderEditor() {
+    let data = getData();
+
+    if (searchQuery) {
+      data = data.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    if (currentSort === 'price') {
+      data.sort((a, b) => a.lowPrice - b.lowPrice);
+    } else if (currentSort === 'name') {
+      data.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const ul = document.getElementById('price-list');
+    ul.innerHTML = '';
+    data.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.style.marginBottom = '8px';
+      li.innerHTML = `
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="flex:1;">${item.name}</span>
+          <input type="number" value="${item.lowPrice}" style="width:80px;" data-name="${item.name}">
+          <button class="delete-item" data-name="${item.name}" style="background:red;color:white;border:none;border-radius:4px;padding:2px 6px;">✖</button>
+        </div>
+      `;
+      ul.appendChild(li);
+    });
+
+    document.querySelectorAll('.delete-item').forEach(btn => {
+      btn.onclick = () => {
+        const name = btn.getAttribute('data-name');
+        const newData = getData().filter(item => item.name !== name);
+        saveData(newData);
+        renderEditor();
+      };
+    });
   }
 
   const editorPanel = document.createElement('div');
