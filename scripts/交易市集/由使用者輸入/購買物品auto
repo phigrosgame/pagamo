@@ -58,42 +58,40 @@
       const quantity = parseInt(quantityElements[i].textContent.replace(/[^0-9]/g, '')) || 1;
       const unitPrice = price / quantity;
 
-      if (unitPrice < 1000000) {
-        const matched = stored.find(item => item.name === name);
-        if (matched && unitPrice < matched.lowPrice * 0.7) {
-          console.log(`🔥 ${name} 超便宜！單價：${unitPrice}，比目標價便宜超過30%！點擊它`);
-          itemButtons[i].click();
-          foundCheap = true;
-          setStatus(`🔥 已自動購買：${name}`, 'rgba(255,69,0,0.8)');
+      const matched = stored.find(item => item.name === name);
+      if (matched && unitPrice < matched.lowPrice) {
+        console.log(`🔥 ${name} 價格符合條件！單價：${unitPrice} < ${matched.lowPrice} → 自動點擊`);
+        itemButtons[i].click();
+        foundCheap = true;
+        setStatus(`🔥 已自動購買：${name}`, 'rgba(255,69,0,0.8)');
+
+        setTimeout(() => {
+          const checkbox = document.querySelector(CHECKBOX_SELECTOR);
+          checkbox?.click();
 
           setTimeout(() => {
-            const checkbox = document.querySelector(CHECKBOX_SELECTOR);
-            checkbox?.click();
+            const buyButton = document.querySelector(BUY_BTN_SELECTOR);
+            buyButton?.click();
 
             setTimeout(() => {
-              const buyButton = document.querySelector(BUY_BTN_SELECTOR);
-              buyButton?.click();
+              const confirmButton = document.querySelector(CONFIRM_BTN_SELECTOR);
+              confirmButton?.click();
 
               setTimeout(() => {
-                const confirmButton = document.querySelector(CONFIRM_BTN_SELECTOR);
-                confirmButton?.click();
+                const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
+                updateButton?.click();
+              }, 500);
 
-                setTimeout(() => {
-                  const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
-                  updateButton?.click();
-                }, 500);
-
-              }, 100);
             }, 100);
           }, 100);
+        }, 100);
 
-          if (resetTimeout) clearTimeout(resetTimeout);
-          resetTimeout = setTimeout(() => {
-            setStatus('⚡ 偵測啟動中...', 'rgba(0,0,0,0.7)');
-          }, 3000);
+        if (resetTimeout) clearTimeout(resetTimeout);
+        resetTimeout = setTimeout(() => {
+          setStatus('⚡ 偵測啟動中...', 'rgba(0,0,0,0.7)');
+        }, 3000);
 
-          break;
-        }
+        break;
       }
     }
 
@@ -109,4 +107,3 @@ setInterval(() => {
   const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
   updateButton?.click();
 }, 500);
-
