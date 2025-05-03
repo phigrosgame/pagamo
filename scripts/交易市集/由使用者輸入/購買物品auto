@@ -8,7 +8,6 @@
   const CONFIRM_BTN_SELECTOR = '.js-confirm-btn';
   const CHECKBOX_SELECTOR = '#confirm-checkbox';
   const PRICE_TARGET_KEY = 'manualLowPriceData';
-  const BLACKLIST_KEY = 'blacklistData';
 
   let resetTimeout = null;
 
@@ -30,17 +29,12 @@
     statusBox.style.background = color;
   }
 
-  function getBlacklist() {
-    return JSON.parse(localStorage.getItem(BLACKLIST_KEY)) || [];
-  }
-
   function getManualLowPriceData() {
     return JSON.parse(localStorage.getItem(PRICE_TARGET_KEY)) || [];
   }
 
   function checkForCheapDeals() {
     const stored = getManualLowPriceData();
-    const blacklist = getBlacklist();
     const nameElements = document.querySelectorAll(NAME_SELECTOR);
     const priceElements = document.querySelectorAll(PRICE_SELECTOR);
     const quantityElements = document.querySelectorAll(QUANTITY_SELECTOR);
@@ -52,8 +46,6 @@
       if (!nameElements[i] || !priceElements[i] || !quantityElements[i] || !itemButtons[i]) continue;
 
       const name = nameElements[i].textContent.trim();
-      if (blacklist.includes(name)) continue;
-
       const price = parseFloat(priceElements[i].textContent.replace(/[^0-9]/g, '')) || 0;
       const quantity = parseInt(quantityElements[i].textContent.replace(/[^0-9]/g, '')) || 1;
       const unitPrice = price / quantity;
@@ -102,8 +94,9 @@
 
   setInterval(checkForCheapDeals, 1000);
 })();
+
 // 每 0.5 秒自動按下 reload 按鈕
 setInterval(() => {
-  const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
+  const updateButton = document.querySelector('button.marketplace_sprite.btn_reload');
   updateButton?.click();
 }, 500);
