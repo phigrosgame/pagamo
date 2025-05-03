@@ -1,6 +1,14 @@
 (function() {
   const STORAGE_KEY = 'manualLowPriceData';
 
+// 若已經存在面板，就只顯示並刷新資料，不重複建立
+  const existingPanel = document.getElementById(EXISTING_PANEL_ID);
+  if (existingPanel) {
+    existingPanel.style.display = 'block';
+    renderEditor();
+    return;
+  }
+
   const editorPanel = document.createElement('div');
   editorPanel.style.position = 'fixed';
   editorPanel.style.bottom = '10px';
