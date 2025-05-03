@@ -1,47 +1,15 @@
 (function() {
   const STORAGE_KEY = 'manualLowPriceData';
-  const EXISTING_PANEL_ID = 'manual-low-price-panel';
-
-  // 定義 renderEditor 函數
-  function renderEditor() {
-    let data = getData();
-
-    if (searchQuery) {
-      data = data.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
-    }
-
-    if (currentSort === 'price') {
-      data.sort((a, b) => a.lowPrice - b.lowPrice);
-    } else if (currentSort === 'name') {
-      data.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    const ul = document.getElementById('price-list');
-    ul.innerHTML = '';
-    data.forEach((item, index) => {
-      const li = document.createElement('li');
-      li.style.marginBottom = '8px';
-      li.innerHTML = `
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="flex:1;">${item.name}</span>
-          <input type="number" value="${item.lowPrice}" style="width:80px;" data-name="${item.name}">
-          <button class="delete-item" data-name="${item.name}" style="background:red;color:white;border:none;border-radius:4px;padding:2px 6px;">✖</button>
-        </div>
-      `;
-      ul.appendChild(li);
-    });
-
-    document.querySelectorAll('.delete-item').forEach(btn => {
-      btn.onclick = () => {
-        const name = btn.getAttribute('data-name');
-        const newData = getData().filter(item => item.name !== name);
-        saveData(newData);
-        renderEditor();
-      };
-    });
-  }
-
-  const editorPanel = document.createElement('div');
+  const PANEL_ID = 'editor-panel';
+  // 檢查是否已經存在面板
+  const existingPanel = document.getElementById(PANEL_ID);
+  if (existingPanel) {
+    // 如果面板已存在，顯示它
+    existingPanel.style.display = 'block';
+  } else {
+    // 如果面板不存在，創建並設置它的 ID
+    const editorPanel = document.createElement('div');
+    editorPanel.id = PANEL_ID;
   editorPanel.style.position = 'fixed';
   editorPanel.style.bottom = '10px';
   editorPanel.style.left = '10px';
@@ -180,4 +148,4 @@
   };
 
   renderEditor();
-})();
+}})();
