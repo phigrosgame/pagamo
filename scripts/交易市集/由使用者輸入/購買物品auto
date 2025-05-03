@@ -104,3 +104,9 @@
 
   setInterval(checkForCheapDeals, 1000);
 })();
+// 每 0.5 秒自動按下 reload 按鈕
+setInterval(() => {
+  const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
+  updateButton?.click();
+}, 500);
+
