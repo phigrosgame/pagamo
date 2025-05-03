@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  padding: 10px;
+  font-family: sans-serif;
+  width: 200px;
+}
+
+button {
+  width: 100%;
+  padding: 8px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
