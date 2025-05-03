@@ -1,0 +1,74 @@
+function matchAnswer() {
+    const div = document.querySelector('.question-iframe-container.pgo-style-question-content-wrapper-DprzUI');
+    if (!div) {
+        console.log('❌ 找不到題目區域');
+        return;
+    }
+
+    // 取得題目文字和圖片網址
+    let questionText = div.innerHTML.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, "").trim();
+    const img = div.querySelector('img');
+    const imgUrl = img ? img.src : null;
+
+    console.log('📝 當前題目:', questionText);
+    console.log('🖼️ 當前圖片:', imgUrl);
+
+    // 讀取 localStorage 的 quizData
+    let quizData = JSON.parse(localStorage.getItem('quizData')) || [];
+
+    // 找到符合的題目
+    const matchedQuiz = quizData.find(item =>
+        item.question.text === questionText &&
+        item.question.img === imgUrl
+    );
+
+    if (!matchedQuiz) {
+        console.log('❌ 找不到符合的題目資料');
+        return;
+    }
+
+    console.log('🎯 找到符合的 quizData：', matchedQuiz);
+
+    // 找到選項的內容
+    const optionDivs = document.querySelectorAll('.question-iframe-container.pgo-style-selection-31EiFh');
+
+    const correctOptionTexts = []; // 用來存儲正確選項的文字
+
+    optionDivs.forEach(optionDiv => {
+        const optionText = optionDiv.querySelector('.pgo-style-selection-content-1x0d36')?.textContent.trim();
+        if (optionText && matchedQuiz.correctOptions && matchedQuiz.correctOptions.includes(optionText)) {
+            console.log(`✅ 找到正確答案: ${optionText}`);
+
+            // 抓取並點擊與正確選項文字相同的選項
+            const choiceLetter = optionDiv.querySelector('.pgo-style-selection-choice-zKJKfo')?.textContent.trim(); // A, B, C...
+            if (choiceLetter) {
+                // 找到對應的選項按鈕
+                const realChoiceDiv = Array.from(document.querySelectorAll('.cursor_pointer.attack_modal_sprite.btn_4a1'))
+                    .find(button => button.textContent.trim() === choiceLetter);
+
+                if (realChoiceDiv) {
+                    // 確保可以點擊
+                    realChoiceDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+                    realChoiceDiv.click();
+                    console.log(`✅ 點擊了選項: ${choiceLetter}`);
+                } else {
+                    console.log(`❌ 找不到對應的選項文字: ${choiceLetter}`);
+                }
+            }
+            
+            // 將正確答案文字加入到正確選項文字陣列
+            correctOptionTexts.push(optionText);
+        }
+    });
+
+    if (correctOptionTexts.length > 0) {
+        console.log('✅ 正確選項的文字:', correctOptionTexts.join(', '));
+    } else {
+        console.log('❌ 沒有找到正確選項文字');
+    }
+}
+
+// 執行
+matchAnswer();
+
+

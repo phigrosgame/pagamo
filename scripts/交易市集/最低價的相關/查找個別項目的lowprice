@@ -1,0 +1,5 @@
+const lowPriceData = JSON.parse(localStorage.getItem('lowestPriceData'));
+const item = lowPriceData.find(data => data.name === "物品1");
+console.log(item); // 顯示物品1的資料
+
+

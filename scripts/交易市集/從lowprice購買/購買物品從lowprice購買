@@ -1,0 +1,104 @@
+(function() {
+  const NAME_SELECTOR = '.pgo-style-name-3ijyRY';
+  const PRICE_SELECTOR = '.pgo-style-price-9yJqYM';
+  const QUANTITY_SELECTOR = '.pgo-style-image-2x9VFm span';
+  const ITEM_BTN_SELECTOR = 'button.marketplace_sprite.frame_goods.pgo-style-container-2E3R9C';
+  const UPDATE_BTN_SELECTOR = 'button.marketplace_sprite.btn_reload';
+  const BUY_BTN_SELECTOR = 'button.cursor_pointer.pgo-style-button-1VMR5A';
+  const CONFIRM_BTN_SELECTOR = '.js-confirm-btn';
+  const CHECKBOX_SELECTOR = '#confirm-checkbox';
+  const STORAGE_KEY = 'lowestPriceData';
+  const BLACKLIST_KEY = 'blacklistData';
+
+  let resetTimeout = null;
+
+  const statusBox = document.createElement('div');
+  statusBox.style.position = 'fixed';
+  statusBox.style.top = '10px';
+  statusBox.style.right = '10px';
+  statusBox.style.padding = '8px 12px';
+  statusBox.style.background = 'rgba(0,0,0,0.7)';
+  statusBox.style.color = '#fff';
+  statusBox.style.borderRadius = '8px';
+  statusBox.style.zIndex = '9999';
+  statusBox.style.fontSize = '14px';
+  statusBox.textContent = '⚡ 偵測啟動中...';
+  document.body.appendChild(statusBox);
+
+  function setStatus(text, color) {
+    statusBox.textContent = text;
+    statusBox.style.background = color;
+  }
+
+  function getBlacklist() {
+    return JSON.parse(localStorage.getItem(BLACKLIST_KEY)) || [];
+  }
+
+  function checkForCheapDeals() {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const blacklist = getBlacklist();
+    const nameElements = document.querySelectorAll(NAME_SELECTOR);
+    const priceElements = document.querySelectorAll(PRICE_SELECTOR);
+    const quantityElements = document.querySelectorAll(QUANTITY_SELECTOR);
+    const itemButtons = document.querySelectorAll(ITEM_BTN_SELECTOR);
+
+    let foundCheap = false;
+
+    for (let i = 0; i < 10; i++) {
+      const name = nameElements[i]?.textContent.trim();
+      if (blacklist.includes(name)) continue;
+
+      const price = parseFloat(priceElements[i]?.textContent.replace(/[^0-9]/g, '')) || 0;
+      const quantity = parseInt(quantityElements[i]?.textContent.replace(/[^0-9]/g, '')) || 1;
+      const unitPrice = price / quantity;
+
+      if (unitPrice < 1000000) {
+        const matched = stored.find(item => item.name === name);
+        if (matched && unitPrice < matched.lowPrice * 0.7) {
+          console.log(`🔥 ${name} 超便宜！單價：${unitPrice}，比最低價便宜超過30%！點擊它`);
+          itemButtons[i]?.click();
+          foundCheap = true;
+          setStatus(`🔥 已自動購買：${name}`, 'rgba(255,69,0,0.8)');
+
+          setTimeout(() => {
+            const checkbox = document.querySelector(CHECKBOX_SELECTOR);
+            if (checkbox) checkbox.click();
+          }, 0);
+
+          setTimeout(() => {
+            const buyButton = document.querySelector(BUY_BTN_SELECTOR);
+            if (buyButton) buyButton.click();
+          }, 0);
+
+          setTimeout(() => {
+            const confirmButton = document.querySelector(CONFIRM_BTN_SELECTOR);
+            if (confirmButton) confirmButton.click();
+          }, 0);
+
+          setTimeout(() => {
+            const updateButton = document.querySelector(UPDATE_BTN_SELECTOR);
+            if (updateButton) updateButton.click();
+          }, 500);
+
+          if (resetTimeout) clearTimeout(resetTimeout);
+          resetTimeout = setTimeout(() => {
+            setStatus('⚡ 偵測啟動中...', 'rgba(0,0,0,0.7)');
+          }, 3000);
+
+          break;
+        }
+      }
+    }
+
+    if (!foundCheap) {
+      if (!resetTimeout) {
+        setStatus('⚡ 偵測啟動中...', 'rgba(0,0,0,0.7)');
+      }
+    }
+  }
+
+  setInterval(checkForCheapDeals, 1000);
+})();
+
+
+

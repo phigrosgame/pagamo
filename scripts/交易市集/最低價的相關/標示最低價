@@ -1,0 +1,56 @@
+(function() {
+  const STORAGE_KEY = 'lowestPriceData';
+  const NAME_SELECTOR = '.pgo-style-name-3ijyRY';
+  const PRICE_SELECTOR = '.pgo-style-price-9yJqYM';
+  const QUANTITY_SELECTOR = '.pgo-style-image-2x9VFm span';
+
+  function getLowPriceData() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  }
+
+  function showLowPriceOnItems() {
+    const data = getLowPriceData();
+    const nameElements = document.querySelectorAll(NAME_SELECTOR);
+    const priceElements = document.querySelectorAll(PRICE_SELECTOR);
+    const quantityElements = document.querySelectorAll(QUANTITY_SELECTOR);
+
+    nameElements.forEach((nameEl, idx) => {
+      const name = nameEl.textContent.trim();
+      const matched = data.find(item => item.name === name);
+
+      if (matched) {
+        if (!nameEl.querySelector('.low-price-tag')) {
+          const priceEl = priceElements[idx];
+          const quantityEl = quantityElements[idx];
+
+          if (!priceEl || !quantityEl) return;
+
+          const price = parseFloat(priceEl.textContent.replace(/[^0-9]/g, '')) || 0;
+          const quantity = parseInt(quantityEl.textContent.replace(/[^0-9]/g, '')) || 1;
+          const unitPrice = price / quantity;
+
+          const lowPriceTag = document.createElement('div');
+          lowPriceTag.className = 'low-price-tag';
+          lowPriceTag.style.fontSize = '12px';
+          lowPriceTag.style.marginTop = '2px';
+          lowPriceTag.style.whiteSpace = 'pre-line';
+
+          lowPriceTag.textContent = `最低：${matched.lowPrice.toLocaleString()}`;
+
+          if (unitPrice < matched.lowPrice * 0.7) {
+            lowPriceTag.style.color = '#FF0000'; // 紅色
+          } else {
+            lowPriceTag.style.color = '#00ff00'; // 綠色
+          }
+
+          nameEl.appendChild(lowPriceTag);
+        }
+      }
+    });
+  }
+
+  setInterval(showLowPriceOnItems, 100);
+})();
+
+
+

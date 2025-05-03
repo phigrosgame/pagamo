@@ -1,0 +1,36 @@
+// 新增一個清理重複資料的按鈕
+const cleanButton = document.createElement('button');
+cleanButton.textContent = '🧹 清理重複資料';
+cleanButton.style.position = 'fixed';
+cleanButton.style.top = '20px';
+cleanButton.style.right = '20px';
+cleanButton.style.zIndex = '9999';
+cleanButton.style.padding = '8px 12px';
+cleanButton.style.backgroundColor = '#4CAF50';
+cleanButton.style.color = 'white';
+cleanButton.style.border = 'none';
+cleanButton.style.borderRadius = '5px';
+cleanButton.style.cursor = 'pointer';
+cleanButton.style.fontSize = '14px';
+document.body.appendChild(cleanButton);
+
+// 點按鈕時清理 localStorage 裡的重複資料
+cleanButton.addEventListener('click', () => {
+    let existingData = JSON.parse(localStorage.getItem('quizData')) || [];
+    const unique = [];
+
+    existingData.forEach(item => {
+        const isDuplicate = unique.some(u =>
+            u.question.text === item.question.text &&
+            JSON.stringify(u.correctOptions) === JSON.stringify(item.correctOptions)
+        );
+        if (!isDuplicate) {
+            unique.push(item);
+        }
+    });
+
+    localStorage.setItem('quizData', JSON.stringify(unique));
+    alert(`✅ 清理完成！剩下 ${unique.length} 筆不重複的資料！`);
+});
+
+
