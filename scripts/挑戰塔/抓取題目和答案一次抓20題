@@ -133,15 +133,6 @@ async function grab20Questions() {
     }
 }
 
-// 🔥 新增重複100次主控
-async function repeatFlow(times = 100) {
-    for (let i = 1; i <= times; i++) {
-        console.log(`🎯 第 ${i} 次流程開始`);
-        await autoFlow();
-        await sleep(300); // 每輪間隔 0.3秒，避免過快
-    }
-    console.log('🏆 100輪全部結束！');
-}
 
 // 執行
-repeatFlow(1);
+autoFlow();
