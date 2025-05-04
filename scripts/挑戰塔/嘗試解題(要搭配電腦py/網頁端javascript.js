@@ -74,11 +74,12 @@ function matchAnswer() {
 function triggerNext() {
     // 檢查是否有送出按鈕，若有且文字是 "送出"
     const submitButton = document.querySelector('#answer-panel-submit-button');
+    const real_submit=document.querySelector(".attack_modal_exam_sprite.btn_exam_submit.cursor_pointer.pgo-style-exam-submit-1TqFkL")
     if (submitButton && submitButton.textContent.trim() === '送出') {
         console.log('✅ 找到「送出」按鈕');
 
         // 點擊「送出」
-        submitButton.click();
+        real_submit.click()
         console.log('✅ 點擊了「送出」或「下一題」按鈕');
 
         // 等待一下再點「直接送出」
@@ -90,7 +91,7 @@ function triggerNext() {
             } else {
                 console.log('❌ 找不到「直接送出」按鈕');
             }
-        }, 300);
+        }, 100);
 
         return; // ⛔️ 點完「直接送出」就停止，不再繼續下面的流程
     }
