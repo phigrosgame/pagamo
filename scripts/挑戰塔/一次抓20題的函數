@@ -11,13 +11,13 @@ async function grab20Questions() {
     if (explanationButton) {
         explanationButton.click();
         console.log('✅ 點了「詳解」');
-        await sleep(300);
+        await sleep(100);
     }
 
     // 抓取20題
     console.log('📚 開始抓20題');
     await grabQuestion();
-    await sleep(300);
+    await sleep(100);
 
     for (let i = 2; i <= 20; i++) {
         const nextButton = Array.from(document.querySelectorAll('div.cursor_pointer.exam_control_list_sprite.q_btn div')).find(div =>
@@ -27,10 +27,10 @@ async function grab20Questions() {
         if (nextButton) {
             nextButton.click();
             console.log(`➡️ 點到第 ${i} 題`);
-            await sleep(300); // 等一下載入
+            await sleep(100); // 等一下載入
 
             await grabQuestion();
-            await sleep(300);
+            await sleep(100);
         } else {
             console.log(`⚠️ 找不到第 ${i} 題按鈕`);
         }
