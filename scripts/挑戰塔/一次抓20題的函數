@@ -1,6 +1,3 @@
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function grab20Questions() {
     console.log('🔵 開始一輪流程...');
@@ -11,13 +8,13 @@ async function grab20Questions() {
     if (explanationButton) {
         explanationButton.click();
         console.log('✅ 點了「詳解」');
-        await sleep(100);
+        await sleep(300);
     }
 
     // 抓取20題
     console.log('📚 開始抓20題');
     await grabQuestion();
-    await sleep(100);
+    await sleep(30);
 
     for (let i = 2; i <= 20; i++) {
         const nextButton = Array.from(document.querySelectorAll('div.cursor_pointer.exam_control_list_sprite.q_btn div')).find(div =>
@@ -45,7 +42,6 @@ async function grab20Questions() {
 
     console.log('🏁 一輪流程完成！');
 }
-
 async function grabQuestion() {
     const div = document.querySelector('.question-iframe-container.pgo-style-question-content-wrapper-DprzUI');
     let questionText = '';
