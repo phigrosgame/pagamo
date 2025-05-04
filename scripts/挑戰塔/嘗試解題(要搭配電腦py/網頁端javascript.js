@@ -77,11 +77,11 @@ function triggerNext() {
     if (submitButton && submitButton.textContent.trim() === '送出') {
         console.log('✅ 找到「送出」按鈕');
 
-        // 先點擊「送出」按鈕或「下一題」按鈕，這兩者是相同的元素
+        // 點擊「送出」
         submitButton.click();
         console.log('✅ 點擊了「送出」或「下一題」按鈕');
 
-        // 等待一下，然後再點擊「直接送出」按鈕
+        // 等待一下再點「直接送出」
         setTimeout(() => {
             const confirmSubmitButton = document.querySelector('button[data-version="default"][data-size="small"][data-color="green"]');
             if (confirmSubmitButton) {
@@ -90,10 +90,12 @@ function triggerNext() {
             } else {
                 console.log('❌ 找不到「直接送出」按鈕');
             }
-        }, 300); // 等待 300 毫秒，確保送出操作完成
+        }, 300);
+
+        return; // ⛔️ 點完「直接送出」就停止，不再繼續下面的流程
     }
 
-    // 點擊「下一題」
+    // 如果沒進入上面條件，才執行下一題流程
     fetch("http://127.0.0.1:5000/click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,13 +104,14 @@ function triggerNext() {
     .then(res => res.json())
     .then(data => {
         console.log("➡️ 已送出下一題:", data);
-        setTimeout(matchAnswer, 2000); // 再過2秒做下一輪
+        setTimeout(matchAnswer, 2000);
     })
     .catch(err => {
         console.error("❌ 發送下一題錯誤:", err);
-        setTimeout(matchAnswer, 2000); // 即使失敗也再試
+        setTimeout(matchAnswer, 2000);
     });
 }
+
 
 // 啟動自動答題
 matchAnswer();
