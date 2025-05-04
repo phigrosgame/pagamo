@@ -1,0 +1,54 @@
+
+async function grabQuestion() {
+    const div = document.querySelector('.question-iframe-container.pgo-style-question-content-wrapper-DprzUI');
+    let questionText = '';
+    let imgUrl = '';
+
+    if (div) {
+        questionText = div.innerHTML.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, "").trim();
+        const img = div.querySelector('img');
+        if (img) {
+            imgUrl = img.src;
+        }
+    }
+
+    const correctOptions = [];
+    const correctDivs = document.querySelectorAll('div[data-correct="true"]');
+    correctDivs.forEach(option => {
+        const optionText = option.querySelector('.pgo-style-selection-content-1x0d36')?.textContent.trim();
+        if (optionText) {
+            correctOptions.push(optionText);
+        }
+    });
+
+    if (!questionText && correctOptions.length === 0) {
+        console.log('⚠️ 沒有找到題目或答案');
+        return;
+    }
+
+    const newResult = {
+        question: {
+            text: questionText,
+            img: imgUrl || null
+        },
+        correctOptions: correctOptions.length > 0 ? correctOptions : null
+    };
+
+    let existingData = JSON.parse(localStorage.getItem('quizData'));
+    if (!Array.isArray(existingData)) {
+        existingData = [];
+    }
+
+    const isDuplicate = existingData.some(item =>
+        item.question.text === newResult.question.text &&
+        JSON.stringify(item.correctOptions) === JSON.stringify(newResult.correctOptions)
+    );
+
+    if (!isDuplicate) {
+        existingData.push(newResult);
+        localStorage.setItem('quizData', JSON.stringify(existingData));
+        console.log('✅ 新資料已存入 localStorage');
+    } else {
+        console.log('🔁 重複的資料，不存');
+    }
+}
