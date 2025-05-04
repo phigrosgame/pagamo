@@ -1,4 +1,5 @@
 function matchAnswer() {
+
     const div = document.querySelector('.question-iframe-container.pgo-style-question-content-wrapper-DprzUI');
     if (!div) {
         console.log('❌ 找不到題目區域');
@@ -56,7 +57,7 @@ function matchAnswer() {
                 .then(res => res.json())
                 .then(data => {
                     console.log("📡 Python回應:", data);
-                    setTimeout(triggerNext, 1000); // 答對後下一題
+                    setTimeout(triggerNext, 300); // 答對後下一題
                 })
                 .catch(err => {
                     console.error("❌ 發送錯誤:", err);
@@ -105,11 +106,11 @@ function triggerNext() {
     .then(res => res.json())
     .then(data => {
         console.log("➡️ 已送出下一題:", data);
-        setTimeout(matchAnswer, 2000);
+        setTimeout(matchAnswer, 300);
     })
     .catch(err => {
         console.error("❌ 發送下一題錯誤:", err);
-        setTimeout(matchAnswer, 2000);
+        setTimeout(matchAnswer, 300);
     });
 }
 
