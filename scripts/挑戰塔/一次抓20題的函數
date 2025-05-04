@@ -27,10 +27,10 @@ async function grab20Questions() {
         if (nextButton) {
             nextButton.click();
             console.log(`➡️ 點到第 ${i} 題`);
-            await sleep(100); // 等一下載入
+            await sleep(30); // 等一下載入
 
             await grabQuestion();
-            await sleep(100);
+            await sleep(30);
         } else {
             console.log(`⚠️ 找不到第 ${i} 題按鈕`);
         }
