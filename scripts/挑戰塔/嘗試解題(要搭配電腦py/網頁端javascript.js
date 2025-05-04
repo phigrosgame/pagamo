@@ -57,7 +57,7 @@ function matchAnswer() {
                 .then(res => res.json())
                 .then(data => {
                     console.log("📡 Python回應:", data);
-                    setTimeout(triggerNext, 300); // 答對後下一題
+                    setTimeout(triggerNext, 120); // 答對後下一題
                 })
                 .catch(err => {
                     console.error("❌ 發送錯誤:", err);
@@ -92,7 +92,7 @@ function triggerNext() {
             } else {
                 console.log('❌ 找不到「直接送出」按鈕');
             }
-        }, 100);
+        }, 120);
 
         return; // ⛔️ 點完「直接送出」就停止，不再繼續下面的流程
     }
@@ -106,14 +106,14 @@ function triggerNext() {
     .then(res => res.json())
     .then(data => {
         console.log("➡️ 已送出下一題:", data);
-        setTimeout(matchAnswer, 300);
+        setTimeout(matchAnswer, 120);
     })
     .catch(err => {
         console.error("❌ 發送下一題錯誤:", err);
-        setTimeout(matchAnswer, 300);
+        setTimeout(matchAnswer, 120);
     });
 }
 
 
 // 啟動自動答題
-matchAnswer();
+matchAnswer();  
