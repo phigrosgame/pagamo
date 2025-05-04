@@ -72,6 +72,28 @@ function matchAnswer() {
 }
 
 function triggerNext() {
+    // 檢查是否有送出按鈕，若有且文字是 "送出"
+    const submitButton = document.querySelector('#answer-panel-submit-button');
+    if (submitButton && submitButton.textContent.trim() === '送出') {
+        console.log('✅ 找到「送出」按鈕');
+
+        // 先點擊「送出」按鈕或「下一題」按鈕，這兩者是相同的元素
+        submitButton.click();
+        console.log('✅ 點擊了「送出」或「下一題」按鈕');
+
+        // 等待一下，然後再點擊「直接送出」按鈕
+        setTimeout(() => {
+            const confirmSubmitButton = document.querySelector('button[data-version="default"][data-size="small"][data-color="green"]');
+            if (confirmSubmitButton) {
+                confirmSubmitButton.click();
+                console.log('✅ 點擊了「直接送出」按鈕');
+            } else {
+                console.log('❌ 找不到「直接送出」按鈕');
+            }
+        }, 300); // 等待 300 毫秒，確保送出操作完成
+    }
+
+    // 點擊「下一題」
     fetch("http://127.0.0.1:5000/click", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
