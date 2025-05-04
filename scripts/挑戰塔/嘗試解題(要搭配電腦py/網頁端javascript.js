@@ -1,3 +1,4 @@
+//js從再試一次頁面開始
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 } 
