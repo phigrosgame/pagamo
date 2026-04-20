@@ -128,11 +128,11 @@ async function grab20Questions() {
     console.log('🔵 開始一輪流程...');
     // 點「詳解」
     const explanationButton = Array.from(document.querySelectorAll('button')).find(btn =>
-        btn.textContent.trim() === '詳解'
+        btn.textContent.trim() === '解說'
     );
     if (explanationButton) {
         explanationButton.click();
-        console.log('✅ 點了「詳解」');
+        console.log('✅ 點了「解說」');
         await sleep(300);
     }
 
@@ -162,7 +162,7 @@ async function grab20Questions() {
     const exitButton = document.querySelector('div.explanation_panel2_sprite.btn_exit');
     if (exitButton) {
         exitButton.click();
-        console.log('✅ 退出詳解！');
+        console.log('✅ 退出解說！');
     }
 
     console.log('🏁 一輪流程完成！');
